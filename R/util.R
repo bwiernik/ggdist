@@ -85,11 +85,20 @@ pmap_dfr_ = function(data, fun) {
   # this is roughly equivalent to
   # pmap_dfr(df, function(...) { ... })
   # but works properly with vctrs (pmap_dfr seems broken on rvars?)
-  purrr::map_dfr(vctrs::vec_chop(data), function(row) do.call(fun, lapply(row, `[[`, 1)))
+  do.call(
+    rbind,
+    lapply(
+      vctrs::vec_chop(data),
+      function(row) do.call(fun, lapply(row, `[[`, 1))
+    )
+  )
 }
 
 ddply_ = function(data, groups, fun, ...) {
-  purrr::map_dfr(dplyr::group_split(data, dplyr::across(groups)), fun, ...)
+  do.call(
+    rbind,
+    lapply(dplyr::group_split(data, dplyr::across(groups)), fun, ...)
+  )
 }
 
 dlply_ = function(data, groups, fun, ...) {

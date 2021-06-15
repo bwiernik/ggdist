@@ -87,9 +87,12 @@ pmap_dfr_ = function(data, fun) {
   # but works properly with vctrs (pmap_dfr seems broken on rvars?)
   do.call(
     rbind,
-    lapply(
-      vctrs::vec_chop(data),
-      function(row) do.call(fun, lapply(row, `[[`, 1))
+    list(
+      lapply(
+        vctrs::vec_chop(data),
+        function(row) do.call(fun, lapply(row, `[[`, 1))
+      ),
+      make.row.names = FALSE
     )
   )
 }
@@ -97,7 +100,10 @@ pmap_dfr_ = function(data, fun) {
 ddply_ = function(data, groups, fun, ...) {
   do.call(
     rbind,
-    lapply(dplyr::group_split(data, dplyr::across(groups)), fun, ...)
+    list(
+      lapply(dplyr::group_split(data, dplyr::across(groups)), fun, ...),
+      make.row.names = FALSE
+    )
   )
 }
 
